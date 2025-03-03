@@ -1,47 +1,41 @@
 package org.hpss.lab1;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
-import static org.hpss.lab1.Data.N;
-
-// Stream T3: T = S*(MO*MP) + SORT(S)*MR
-
-//public class T3 implements Runnable{
-//    @Override
-//    public void run() {
-//        int[][] MO = Data.generateMatrix(3);
-//        int[][] MP = Data.generateMatrix(3);
-//        int[][] MR = Data.generateMatrix(3);
-//        int[] S = Data.generateVector(3);
-//
-//        int[] sortedS = Data.sortVector(S);
-//        int[][] MO_MP = Data.multiplyMatrices(MO, MP);
-//        int[] S_MO_MP = Data.multiplyVectorMatrix(S, MO_MP);
-//        int[] sortedS_MR = Data.multiplyVectorMatrix(sortedS, MR);
-//
-//        int[] T = new int[N];
-//
-//        for (int i = 0; i < N; i++) {
-//            T[i] = S_MO_MP[i] + sortedS_MR[i];
-//        }
-//
-//        System.out.println("T3 (T) = " + Arrays.toString(T));
-//
-//    }
-//}
 
 // Stream T3: T = S*(MO*MP) + SORT(S)*MR
 class T3 extends Thread {
     public void run() {
-        //Data.T = Data.multiplyMatrices(Data.MO, Data.MP);
-        int[][] MO_MP = Data.multiplyMatrices(Data.MO, Data.MP);
-        int[] S_MO_MP = Data.multiplyVectorMatrix(Data.S, MO_MP);
-        //Data.maxA = Arrays.stream(Data.S).max().orElse(Integer.MIN_VALUE);
-        int[] sortedS = Data.sortVector(Data.S);
-        int[] sortedS_MR = Data.multiplyVectorMatrix(sortedS, Data.MR);
-        for (int i = 0; i < Data.N; i++) {
-            Data.T[i] = S_MO_MP[i] + sortedS_MR[i];
+        System.out.println("T3 has started: ");
+
+        // 	Введення даних
+        int[][] MO = new int[Data.N][Data.N];
+        int[][] MP = new int[Data.N][Data.N];
+        int[][] MR = new int[Data.N][Data.N];
+        int[] S = new int[Data.N];
+        int[] T = new int[Data.N];
+
+        if (Data.N <= 3) {
+
+            Scanner scanner = new Scanner(System.in);
+            int num = scanner.nextInt();
+
+            Data.fillT3(num, MO, MP, MR, S);
         }
-        System.out.println("T3: (T) = " + Arrays.toString(Data.T));
+
+        // 	Обчислення F1
+        int[][] MO_MP = Data.multiplyMatrices(MO, MP);
+        int[] S_MO_MP = Data.multiplyVectorMatrix(S, MO_MP);
+        //Data.maxA = Arrays.stream(Data.S).max().orElse(Integer.MIN_VALUE);
+        int[] sortedS = Data.sortVector(S);
+        int[] sortedS_MR = Data.multiplyVectorMatrix(sortedS, MR);
+        for (int i = 0; i < Data.N; i++) {
+            T[i] = S_MO_MP[i] + sortedS_MR[i];
+        }
+
+        // 	Виведення результату
+        System.out.println("T3: (T) = " + Arrays.toString(T));
+        System.out.println("T3 has ended ");
     }
 }

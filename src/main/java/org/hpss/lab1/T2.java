@@ -1,38 +1,42 @@
 package org.hpss.lab1;
 
 import java.util.Arrays;
+import java.util.Scanner;
 
 // Потік T2: MF = TRANS(MG) + MK*ML
-
-//public class T2 implements Runnable{
-//
-//    @Override
-//    public void run() {
-//        int[][] MG = Data.generateMatrix(2);
-//        int[][] MK = Data.generateMatrix(2);
-//        int[][] ML = Data.generateMatrix(2);
-//
-//        int[][] transMG = Data.transposeMatrix(MG);
-//        int[][] MK_ML = Data.multiplyMatrices(MK, ML);
-//
-//        int[][] MF = new int[Data.N][Data.N];
-//        for (int i = 0; i < Data.N; i++) {
-//            for (int j = 0; j < Data.N; j++) {
-//                MF[i][j] = transMG[i][j] + MK_ML[i][j];
-//            }
-//        }
-//        System.out.println("T2 (MF) = " + Arrays.deepToString(MF));
-//    }
-//}
 class T2 extends Thread {
     public void run() {
-        Data.MF = Data.multiplyMatrices(Data.MK, Data.ML);
-        Data.MG = Data.transposeMatrix(Data.MG);
+        System.out.println("T2 has started: ");
+
+        // 	Введення даних
+        int[][] MG = new int[Data.N][Data.N];
+        int[][] MK = new int[Data.N][Data.N];
+        int[][] ML = new int[Data.N][Data.N];
+
+        int[][] MK_ML_tmp;
+
+        int[][] MF = new int[Data.N][Data.N];
+
+        if (Data.N <= 3) {
+
+            Scanner scanner = new Scanner(System.in);
+            int num = scanner.nextInt();
+
+            Data.fillT2(num, MG, MK, ML);
+        }
+
+        // 	Обчислення F1
+        MK_ML_tmp = Data.multiplyMatrices(MK, ML);
+        MG = Data.transposeMatrix(MG);
+
         for (int i = 0; i < Data.N; i++) {
             for (int j = 0; j < Data.N; j++) {
-                Data.MF[i][j] += Data.MG[j][i];
+                MF[i][j] = MG[i][j] + MK_ML_tmp[i][j];
             }
         }
-        System.out.println("T2: (MF) = " + Arrays.deepToString(Data.MF));
+
+        // 	Виведення результату
+        System.out.println("T2: MF = " + Arrays.deepToString(MF));
+        System.out.println("T2 has ended ");
     }
 }
