@@ -11,6 +11,9 @@ public class Lab1 {
 
         Data.initialize(N);
 
+        // Create timer
+        long startTime = System.currentTimeMillis();
+
         T1 t1 = new T1();
         T2 t2 = new T2();
         T3 t3 = new T3();
@@ -27,6 +30,7 @@ public class Lab1 {
             e.printStackTrace();
         }
 
-        System.out.println("Lab1 execution completed.");
+        long stopTime = System.currentTimeMillis();
+        System.out.printf("Lab1 execution completed, it took %d ms", stopTime - startTime);
     }
 }

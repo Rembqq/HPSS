@@ -17,14 +17,16 @@ class T2 extends Thread {
 
         int[][] MF = new int[Data.N][Data.N];
 
+        // num = 2 is a default value for T2
+        int num = 1;
+
         if (Data.N <= 3) {
-
+            System.out.println("T2 value: ");
             Scanner scanner = new Scanner(System.in);
-            int num = scanner.nextInt();
-
-            Data.fillT2(num, MG, MK, ML);
+            num = scanner.nextInt();
         }
 
+        Data.fillT2(num, MG, MK, ML);
         // 	Обчислення F1
         MK_ML_tmp = Data.multiplyMatrices(MK, ML);
         MG = Data.transposeMatrix(MG);
@@ -36,7 +38,9 @@ class T2 extends Thread {
         }
 
         // 	Виведення результату
-        System.out.println("T2: MF = " + Arrays.deepToString(MF));
+        if(Data.N < 10) {
+            System.out.println("T2: MF = " + Arrays.deepToString(MF));
+        }
         System.out.println("T2 has ended ");
     }
 }

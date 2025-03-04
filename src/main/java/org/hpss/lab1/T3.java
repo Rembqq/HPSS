@@ -16,13 +16,16 @@ class T3 extends Thread {
         int[] S = new int[Data.N];
         int[] T = new int[Data.N];
 
+        // num = 3 is a default value for T3
+        int num = 3;
+
         if (Data.N <= 3) {
-
+            System.out.println("T3 value: ");
             Scanner scanner = new Scanner(System.in);
-            int num = scanner.nextInt();
-
-            Data.fillT3(num, MO, MP, MR, S);
+            num = scanner.nextInt();
         }
+
+        Data.fillT3(num, MO, MP, MR, S);
 
         // 	Обчислення F1
         int[][] MO_MP = Data.multiplyMatrices(MO, MP);
@@ -35,7 +38,9 @@ class T3 extends Thread {
         }
 
         // 	Виведення результату
-        System.out.println("T3: (T) = " + Arrays.toString(T));
+        if(Data.N < 10) {
+            System.out.println("T3: (T) = " + Arrays.toString(T));
+        }
         System.out.println("T3 has ended ");
     }
 }
