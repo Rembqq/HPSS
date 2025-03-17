@@ -6,6 +6,17 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
+/*
+Лабораторна робота ЛР2 Варіант 25
+Z = (B*C)*D + E*(MA*MB)*x
+ПВВ1: Z, C, x
+ПВВ2: B, MA
+ПВВ3: E
+ПВВ4: D, MB
+Волковський М.І. ІМ-24
+Дата 25.03.2024
+ */
+
 public class Lab2 {
 
     static int N = 16, P = 4, DEFAULT_NUM = 0, H;

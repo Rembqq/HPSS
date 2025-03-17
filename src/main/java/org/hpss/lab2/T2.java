@@ -2,45 +2,74 @@ package org.hpss.lab2;
 
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.Semaphore;
 
-// Потік T2: MF = TRANS(MG) + MK*ML
 class T2 extends Thread {
+
+    static int[] B = new int[Lab2.N], Z2 = new int[Lab2.H];
+    static int[][] MA = new int[Lab2.N][Lab2.N];
+    private int x2, a2;
+
+    private Semaphore sem;
+    private CountDownLatch latch;
+    private CyclicBarrier bar1, bar2;
+
+    public T2(CyclicBarrier bar1, CyclicBarrier bar2,
+              Semaphore sem, CountDownLatch latch) {
+        this.sem = sem;
+        this.latch = latch;
+        this.bar1 = bar1;
+        this.bar2 = bar2;
+    }
+
     public void run() {
-        System.out.println("T2 has started: ");
 
-        // 	Введення даних
-        int[][] MG = new int[Data.N][Data.N];
-        int[][] MK = new int[Data.N][Data.N];
-        int[][] ML = new int[Data.N][Data.N];
+        try {
+            // 1. Початок виконання задачі Т2
+            System.out.println("T2 has started: ");
 
-        int[][] MK_ML_tmp;
+            // 2. Введення B, MA
+            Arrays.fill(B, Lab2.DEFAULT_NUM);
+            Data.fillMatrixByValue(MA, Lab2.DEFAULT_NUM);
 
-        int[][] MF = new int[Data.N][Data.N];
+            // 3. Сигнал задачі T1, T3, T4 про введення B, MA
+            // 4. Чекати на введення даних в задачі T1, T3, T4
 
-        // num = 2 is a default value for T2
-        int num = 1;
+            bar1.await();
 
-        if (Data.N <= 3) {
-            System.out.println("T2 value: ");
-            Scanner scanner = new Scanner(System.in);
-            num = scanner.nextInt();
-        }
+            // 5. Обчислення1 a2 = (BH * CH)
+            int ai = Data.calculateA(Lab2.H, B, T1.С);
 
-        Data.fillT2(num, MG, MK, ML);
-        // 	Обчислення F1
-        MK_ML_tmp = Data.multiplyMatrices(MK, ML);
-        MG = Data.transposeMatrix(MG);
+            // 6.	Обчислення2 a = a + a2 (КД1; СР)
+            Lab2.a.getAndAdd(ai);
 
-        for (int i = 0; i < Data.N; i++) {
-            for (int j = 0; j < Data.N; j++) {
-                MF[i][j] = MG[i][j] + MK_ML_tmp[i][j];
+            // 7. Сигнал задачі T1, T3, T4 про завершення обчислень a
+            // 8. Чекати на завершення обчислень a в T1, T3, T4
+
+            bar2.await();
+
+            // 9. Копія a2 = a (КД2)
+            a2 = Lab2.a.get();
+
+            // 10. Копія x2 = x (КД3)
+            sem.acquire();
+            x2 = T1.x;
+            sem.release();
+
+            // 11. Обчислення3: ZH = а * D2 + F2 * x
+
+            Z2 = Data.calculateZ(Lab2.H, a2, T4.D, T3.E, MA, T4.MB, x2);
+
+            // 	Виведення результату
+            if (Data.N < 10) {
+                System.out.println("T2: MF = " + Arrays.deepToString(MF));
             }
+            System.out.println("T2 has ended ");
+        } catch (BrokenBarrierException | InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
-        // 	Виведення результату
-        if(Data.N < 10) {
-            System.out.println("T2: MF = " + Arrays.deepToString(MF));
-        }
-        System.out.println("T2 has ended ");
     }
 }

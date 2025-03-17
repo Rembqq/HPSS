@@ -1,23 +1,26 @@
 package org.hpss.lab2;
 
-// Потік T1: c = MAX(MA*MB)*(A*B)
-
 import java.util.Arrays;
 import java.util.Scanner;
+import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
 
-class T1 extends Thread {
+public class T1 extends Thread {
 
     private Semaphore sem;
     private CyclicBarrier bar1, bar2;
     private CountDownLatch latch;
 
     public static int[] С = new int[Lab2.N];
+    private int[] Z1 = new int[Lab2.H];
+    private int[] Z = new int[Lab2.N];
+
     public static int x, a1, x1;
 
-    public T1(CyclicBarrier bar1, CyclicBarrier bar2, Semaphore sem, CountDownLatch latch) {
+    public T1(CyclicBarrier bar1, CyclicBarrier bar2,
+              Semaphore sem, CountDownLatch latch) {
         this.bar1 = bar1;
         this.bar2 = bar2;
         this.sem = sem;
@@ -26,31 +29,61 @@ class T1 extends Thread {
 
     @Override
     public void run() {
-        System.out.println("T1 has started: ");
+        try {
 
-        // 	Введення даних
-        Arrays.fill(C, 1);
-        x = Lab2.DEFAULT_NUM;
+            // Виведення повідомлення про початок виконання потоку T1
+            System.out.println("T1 has started: ");
 
+            // 	Введення C, x
+            Arrays.fill(С, Lab2.DEFAULT_NUM);
+            x = Lab2.DEFAULT_NUM;
 
-        // num = 1 is a default value for T1
-        int c, num = 1;
+            // Бар'єр 1
+            // 3 & 4. Сигнал про введення C, x, чекати на введення даних в задачі T2, T3, T4
+            bar1.await();
 
-        if (Data.N <= 3) {
-            System.out.println("T1 value: ");
-            Scanner scanner = new Scanner(System.in);
-            num = scanner.nextInt();
+            // 5. Обчислення1: a1 = (Bh * Ch)
+            int ai = Data.calculateA(0, T2.B, С);
+
+            // Атомік 1
+            // 6. Обчислення2: a = a + a1 (КД1; СР)
+            Lab2.a.getAndAdd(ai);
+
+            // Бар'єр 2
+            // 7 & 8. Сигнал про завершення обчислень a, чекати на
+            // завершення обчислень a в
+            bar2.await();
+
+            // Атомік 1
+            // 9. Копія a1 = a (КД2)
+            a1 = Lab2.a.get();
+
+            // Семафор 1
+            // 10.Копія x1 = x
+            sem.acquire();
+            x1 = x; // (КД3)
+            sem.release();
+
+            // 11. Обчислення3: Zh = a1 * Dh + E*(MA * MBh) * x1
+            Z1 = Data.calculateZ(0, a1, T4.D, T3.E, T2.MA,
+                    T4.MB, x1);
+
+            // CountDownLatch 1
+            // 12. Чекати на завершення обчислень Zh в T2, T3, T4
+            latch.await();
+
+            System.arraycopy(Z1, 0, Z, 0, Z1.length);
+            System.arraycopy(T2.Z2, 0, Z, Z1.length, T2.Z2.length);
+
+            // 	Виведення результату
+//            if (Data.N < 10) {
+//                System.out.println("T1: c = " + c);
+//            }
+            System.out.println("T1 has ended ");
+        } catch (BrokenBarrierException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
-
-        Data.fillT1(num, MA, MB, A, B);
-
-        // 	Обчислення F1
-        c = Data.maxMatrix(Data.multiplyMatrices(MA, MB)) * Data.dotProduct(A, B);
-
-        // 	Виведення результату
-        if(Data.N < 10) {
-            System.out.println("T1: c = " + c);
-        }
-        System.out.println("T1 has ended ");
     }
 }

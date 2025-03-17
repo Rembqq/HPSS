@@ -7,7 +7,7 @@ import static org.hpss.lab2.Lab2.N;
 
 class Data {
 
-    private static void fillMatrixByValue(int[][] matrix, int value) {
+    public static void fillMatrixByValue(int[][] matrix, int value) {
         for (int i = 0; i < N; i++) {
             Arrays.fill(matrix[i], value);
         }
@@ -24,7 +24,21 @@ class Data {
         return multiplyVectorVector(vectorB, vectorC);
     }
 
+    // Z = a * D + E*(MA * MB) * x
+    public static int[] calculateZ(int startIndex, int a, int[] D, int[] E, int[][] MA,
+                                 int[][] MB, int x) {
+        int[] vectorD = new int[Lab2.H];
+        int[][] matrixMB = new int[Lab2.H][Lab2.H];
 
+        System.arraycopy(D, startIndex, vectorD, 0, Lab2.H);
+        for(int i = 0; i < MB.length; ++i) {
+            System.arraycopy(MB[i], startIndex, matrixMB[i], 0, Lab2.H);
+        }
+
+        return  sumVectors(multiplyVectorScalar(a, vectorD), multiplyVectorScalar(x,
+                multiplyVectorMatrix(E, multiplyMatrices(MA, matrixMB))));
+
+    }
 
     static void fillT1(int value, int[][] MA, int[][] MB, int[] A, int[] B) {
         fillMatrixByValue(MA, value);
@@ -61,14 +75,6 @@ class Data {
         return Arrays.stream(matrix).flatMapToInt(Arrays::stream).max().orElse(Integer.MIN_VALUE);
     }
 
-    static int dotProduct(int[] vec1, int[] vec2) {
-        int sum = 0;
-        for (int i = 0; i < N; i++) {
-            sum += vec1[i] * vec2[i];
-        }
-        return sum;
-    }
-
     static int[][] multiplyMatrices(int[][] m1, int[][] m2) {
         int[][] result = new int[N][N];
         for (int i = 0; i < N; i++) {
@@ -79,6 +85,30 @@ class Data {
             }
         }
         return result;
+    }
+
+    static int[] sumVectors(int[] v1, int[] v2) {
+
+        if(v1.length != v2.length) {
+            throw new IllegalArgumentException("Vector addition error. " +
+                    "Vectors are not equal in size");
+        }
+
+        int[] res = new int[v1.length];
+
+        for(int i = 0; i < v1.length; ++i) {
+            res[i] = v1[i] + v2[i];
+        }
+
+        return res;
+    }
+
+
+    static int[] multiplyVectorScalar(int scalar, int[] vector) {
+        for(int i = 0; i < vector.length; ++i) {
+            vector[i] *= scalar;
+        }
+        return vector;
     }
 
     static int multiplyVectorVector(int[] v1, int[] v2) {
