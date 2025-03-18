@@ -1,7 +1,6 @@
 package org.hpss.lab2;
 
 import java.util.Arrays;
-import java.util.Scanner;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
@@ -9,13 +8,13 @@ import java.util.concurrent.Semaphore;
 
 public class T1 extends Thread {
 
-    private Semaphore sem;
-    private CyclicBarrier bar1, bar2;
-    private CountDownLatch latch;
+    private final Semaphore sem;
+    private final CyclicBarrier bar1, bar2;
+    private final CountDownLatch latch;
 
     public static int[] С = new int[Lab2.N];
     private int[] Z1 = new int[Lab2.H];
-    private int[] Z = new int[Lab2.N];
+    private final int[] Z = new int[Lab2.N];
 
     public static int x, a1, x1;
 
@@ -65,7 +64,7 @@ public class T1 extends Thread {
             sem.release();
 
             // 11. Обчислення3: Zh = a1 * Dh + E*(MA * MBh) * x1
-            Z1 = Data.calculateZ(0, a1, T4.D, T3.E, T2.MA,
+            Z1 = Data.calculateZ(0, a1, T4.D, T3.readE(), T2.readMA(),
                     T4.MB, x1);
 
             // CountDownLatch 1
@@ -74,16 +73,21 @@ public class T1 extends Thread {
 
             System.arraycopy(Z1, 0, Z, 0, Z1.length);
             System.arraycopy(T2.Z2, 0, Z, Z1.length, T2.Z2.length);
+            System.arraycopy(T3.Z3, 0, Z, Z1.length +
+                    T2.Z2.length, T3.Z3.length);
+            System.arraycopy(T4.Z4, 0, Z, Z1.length +
+                    T2.Z2.length + T3.Z3.length, T4.Z4.length);
 
-            // 	Виведення результату
-//            if (Data.N < 10) {
-//                System.out.println("T1: c = " + c);
-//            }
+            // 13. Виведення результату Z
+            System.out.println(Arrays.toString(Z));
+
+            // Виведення повідомлення про завершення виконання потоку
             System.out.println("T1 has ended ");
-        } catch (BrokenBarrierException e) {
-            throw new RuntimeException(e);
         } catch (InterruptedException e) {
-            throw new RuntimeException(e);
+            Thread.currentThread().interrupt();
+            System.out.println("Thread 1 was interrupted.");
+        } catch (BrokenBarrierException e) {
+            System.out.println("Barrier is broken.");
         }
     }
 }

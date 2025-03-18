@@ -1,6 +1,5 @@
 package org.hpss.lab2;
 
-import java.util.Scanner;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Semaphore;
@@ -19,7 +18,7 @@ Z = (B*C)*D + E*(MA*MB)*x
 
 public class Lab2 {
 
-    static int N = 16, P = 4, DEFAULT_NUM = 0, H;
+    static int N = 16, P = 4, DEFAULT_NUM = 1, H;
     static AtomicInteger a = new AtomicInteger(0);
 
     public static void main(String[] args) {
@@ -43,7 +42,7 @@ public class Lab2 {
         Thread T1 = new T1(bar1, bar2, sem, latch);
         Thread T2 = new T2(bar1, bar2, sem, latch);
         Thread T3 = new T3(bar1, bar2, sem, latch);
-        Thread T4 = new T3(bar1, bar2, sem, latch);
+        Thread T4 = new T4(bar1, bar2, sem, latch);
 
         T1.start();
         T2.start();
