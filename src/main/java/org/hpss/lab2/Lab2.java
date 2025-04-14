@@ -13,12 +13,12 @@ Z = (B*C)*D + E*(MA*MB)*x
 ПВВ3: E
 ПВВ4: D, MB
 Волковський М.І. ІМ-24
-Дата 25.03.2024
+Дата 19.03.2024
  */
 
 public class Lab2 {
 
-    static int N = 16, P = 4, DEFAULT_NUM = 1, H;
+    static int N = 1000, P = 4, DEFAULT_NUM = 1, H;
     static AtomicInteger a = new AtomicInteger(0);
 
     public static void main(String[] args) {

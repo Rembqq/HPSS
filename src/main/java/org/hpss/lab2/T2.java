@@ -27,7 +27,7 @@ class T2 extends Thread {
         this.bar2 = bar2;
     }
 
-    public static int[][] readMA() {
+    public static int[][] getMA() {
         Cs2.lock();
         try {
             return MA;
@@ -73,7 +73,7 @@ class T2 extends Thread {
 
             // 11. Обчислення3: ZH = а * D2 + F2 * x
 
-            Z2 = Data.calculateZ(Lab2.H, a2, T4.D, T3.readE(), readMA(), T4.MB, x2);
+            Z2 = Data.calculateZ(Lab2.H, a2, T4.D, T3.getE(), getMA(), T4.MB, x2);
 
             // 12. Сигнал задачі T1 про завершення обчислень ZH
             latch.countDown();

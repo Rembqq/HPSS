@@ -26,20 +26,14 @@ class Data {
     // Z = a * D + E*(MA * MB) * x
     public static int[] calculateZ(int startIndex, int a, int[] D, int[] E, int[][] MA,
                                  int[][] MB, int x) {
-        System.out.println(Thread.currentThread().getName() + " calculates Z");
         int[] vectorD = new int[Lab2.H];
         int[][] matrixMB = new int[Lab2.N][Lab2.H];
 
         System.arraycopy(D, startIndex, vectorD, 0, Lab2.H);
 
-        System.out.println( Thread.currentThread().getName() + " " + startIndex + " " + a + "\n" + Arrays.toString(D) + "\n" + Arrays.toString(E) +
-                             "\n" + Arrays.deepToString(MA) + "\n" + Arrays.deepToString(MB) + "\n" + x);
-
         for(int i = 0; i < Lab2.N; ++i) {
             System.arraycopy(MB[i], 0, matrixMB[i], 0, Lab2.H);
         }
-
-        System.out.println(Thread.currentThread().getName() + " counted Z");
 
         return sumVectors(multiplyVectorScalar(a, vectorD), multiplyVectorScalar(x,
                 multiplyVectorMatrix(E, multiplyMatrices(MA, matrixMB))));
@@ -70,12 +64,6 @@ class Data {
 //            throw new IllegalArgumentException("Vector addition error. " +
 //                    "Vectors are not equal in size");
 //        }
-
-
-        System.out.println(Arrays.toString(v1));
-        System.out.println(Arrays.toString(v2));
-
-        System.out.println("DIVIDER\n\n");
 
         int minLength = Math.min(v1.length, v2.length);
 

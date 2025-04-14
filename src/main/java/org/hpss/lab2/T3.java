@@ -24,7 +24,7 @@ class T3 extends Thread {
         this.bar2 = bar2;
     }
 
-    public static int[] readE() {
+    public static int[] getE() {
         synchronized (Cs1) {
             return E;
         }
@@ -62,8 +62,8 @@ class T3 extends Thread {
             sem.release();
 
             //11. Обчислення3: ZH = a3 * DH + E*(MA * MBH) * x3
-            Z3 = Data.calculateZ(Lab2.H * 2, a3, T4.D, readE(),
-                    T2.readMA(), T4.MB, x3);
+            Z3 = Data.calculateZ(Lab2.H * 2, a3, T4.D, getE(),
+                    T2.getMA(), T4.MB, x3);
 
             //12. Сигнал задачі T1 про завершення обчислень ZH
             latch.countDown();

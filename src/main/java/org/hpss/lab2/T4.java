@@ -11,7 +11,6 @@ public class T4 extends Thread{
     static int[] D = new int[Lab2.N], Z4 = new int[Lab2.H];
     static int[][] MB = new int[Lab2.N][Lab2.N];
     private int x4, a4;
-
     private final Semaphore sem;
     private final CountDownLatch latch;
     private final CyclicBarrier bar1, bar2;
@@ -31,9 +30,7 @@ public class T4 extends Thread{
 
             // 2. Введення D, MB
             Arrays.fill(D, Lab2.DEFAULT_NUM);
-            System.out.println("D: " + Arrays.toString(D));
             Data.fillMatrixByValue(MB, Lab2.DEFAULT_NUM);
-            System.out.println("MB: " + Arrays.deepToString(MB));
 
             // 3. Сигнал задачі T1, T2, T3 про введення D, MB
             // 4. Чекати на введення даних в задачі T1, T2, T3
@@ -60,8 +57,8 @@ public class T4 extends Thread{
 
             // 11. Обчислення3: ZH = а * D2 + F2 * x
 
-            Z4 = Data.calculateZ(Lab2.H * 3, a4, D, T3.readE(),
-                    T2.readMA(), MB, x4);
+            Z4 = Data.calculateZ(Lab2.H * 3, a4, D, T3.getE(),
+                    T2.getMA(), MB, x4);
 
             // 12. Сигнал задачі T1 про завершення обчислень ZH
             latch.countDown();

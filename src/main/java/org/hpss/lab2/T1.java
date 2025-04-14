@@ -50,7 +50,7 @@ public class T1 extends Thread {
 
             // Бар'єр 2
             // 7 & 8. Сигнал про завершення обчислень a, чекати на
-            // завершення обчислень a в
+            // завершення обчислень a в T2, T3, T4
             bar2.await();
 
             // Атомік 1
@@ -64,7 +64,7 @@ public class T1 extends Thread {
             sem.release();
 
             // 11. Обчислення3: Zh = a1 * Dh + E*(MA * MBh) * x1
-            Z1 = Data.calculateZ(0, a1, T4.D, T3.readE(), T2.readMA(),
+            Z1 = Data.calculateZ(0, a1, T4.D, T3.getE(), T2.getMA(),
                     T4.MB, x1);
 
             // CountDownLatch 1
