@@ -1,4 +1,4 @@
-package org.hpss.lab3;
+package lab3;
 
 import java.util.Arrays;
 import java.util.concurrent.BrokenBarrierException;
@@ -7,6 +7,7 @@ public class T4 extends Thread{
 
     static int[] R = new int[Lab3.N];
     static int[] Z = new int[Lab3.N];
+    static int[] A4 = new int[Lab3.N];
 
     @Override
     public void run() {
@@ -49,13 +50,13 @@ public class T4 extends Thread{
 
             // 11. Обчислення3: ZH = а * D2 + F2 * x
 
-            Z4 = Data.calculateZ(Lab3.H * 3, a4, D, T3.getE(),
+            A4 = Data.calculateRes(Lab3.H * 3, a4, D, T3.getE(),
                     T2.getMA(), MB, x4);
 
             // 12. Сигнал задачі T3 про завершення обчислень ZH
             m.signalAComplete();
 
-            System.out.println("T4 has ended ");
+            System.out.println("T4 has ended");
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
             System.out.println("Thread 4 was interrupted.");

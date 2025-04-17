@@ -18,7 +18,7 @@ Z = (B*C)*D + E*(MA*MB)*x
 
 public class Lab2 {
 
-    static int N = 1000, P = 4, DEFAULT_NUM = 1, H;
+    static int N = 16, P = 4, DEFAULT_NUM = 1, H;
     static AtomicInteger a = new AtomicInteger(0);
 
     public static void main(String[] args) {

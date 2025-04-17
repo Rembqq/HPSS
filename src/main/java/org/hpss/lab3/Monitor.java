@@ -1,10 +1,8 @@
-package org.hpss.lab3;
-
-import java.util.Arrays;
+package lab3;
 
 public class Monitor {
     private int inputReady = 0;
-    private int aReady = 0;
+    //private int aReady = 0;
     private int resReady = 0;
     private int p = Lab3.DEFAULT_NUM;
     private int a = Lab3.DEFAULT_NUM;
@@ -19,7 +17,13 @@ public class Monitor {
 
     public synchronized void signalInputReady() {
         inputReady++;
-        notifyAll();
+        if (inputReady == 4) {
+            notifyAll();
+        }
+        else if (inputReady > 4) {
+            inputReady -= 4;
+        }
+
     }
 
     public synchronized void waitForInput() {
@@ -34,8 +38,8 @@ public class Monitor {
 
     public synchronized void addToA(int value) {
         a += value;
-        aReady++;
-        notifyAll();
+//        aReady++;
+//        notifyAll();
     }
 
     public synchronized int getA() {
@@ -68,8 +72,8 @@ public class Monitor {
     }
 
     public synchronized void signalAComplete() {
-        resReady++;
-        if(resReady == 4) {
+        resReady = (resReady + 1) % 3;
+        if (resReady == 0) {
             notifyAll();
         }
     }

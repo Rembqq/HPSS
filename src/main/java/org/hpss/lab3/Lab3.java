@@ -1,9 +1,4 @@
-package org.hpss.lab3;
-
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.atomic.AtomicInteger;
+package lab3;
 
 /*
 Лабораторна робота ЛР3 Варіант 6

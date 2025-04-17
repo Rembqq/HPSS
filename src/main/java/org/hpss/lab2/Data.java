@@ -32,12 +32,11 @@ class Data {
         System.arraycopy(D, startIndex, vectorD, 0, Lab2.H);
 
         for(int i = 0; i < Lab2.N; ++i) {
-            System.arraycopy(MB[i], 0, matrixMB[i], 0, Lab2.H);
+            System.arraycopy(MB[i], startIndex, matrixMB[i], 0, Lab2.H);
         }
 
         return sumVectors(multiplyVectorScalar(a, vectorD), multiplyVectorScalar(x,
                 multiplyVectorMatrix(E, multiplyMatrices(MA, matrixMB))));
-
     }
 
     static int[][] multiplyMatrices(int[][] m1, int[][] m2) {

@@ -1,4 +1,4 @@
-package org.hpss.lab3;
+package lab3;
 
 import java.util.Arrays;
 import java.util.concurrent.BrokenBarrierException;

@@ -1,4 +1,4 @@
-package org.hpss.lab3;
+package lab3;
 
 import java.util.Arrays;
 
@@ -12,31 +12,32 @@ class Data {
         }
     }
 
-    // a = (B * C)
-    public static int calculateA(int startIndex, int[] B, int[] C) {
+    // a = (B * Z)
+    public static int calculateA(int startIndex, int[] B, int[] Z) {
         int[] vectorB = new int[N];
-        int[] vectorC = new int[N];
+        int[] vectorZ = new int[N];
 
         System.arraycopy(B, startIndex, vectorB, 0, Lab3.H);
-        System.arraycopy(C, startIndex, vectorC, 0, Lab3.H);
+        System.arraycopy(Z, startIndex, vectorZ, 0, Lab3.H);
 
-        return multiplyVectorVector(vectorB, vectorC);
+        return multiplyVectorVector(vectorB, vectorZ);
     }
 
-    // Z = a * D + E*(MA * MB) * x
-    public static int[] calculateZ(int startIndex, int a, int[] D, int[] E, int[][] MA,
-                                 int[][] MB, int x) {
-        int[] vectorD = new int[Lab3.H];
-        int[][] matrixMB = new int[Lab3.N][Lab3.H];
+    // A = (R*MC)*MD*p + a*E*d
+    public static int[] calculateRes(int startIndex, int a, int p, int d,
+                                     int[] R, int[] E, int[][] MC, int[][] MD) {
 
-        System.arraycopy(D, startIndex, vectorD, 0, Lab3.H);
+        int[][] matrixMC = new int[Lab3.N][Lab3.H];
+        int[][] matrixMD = new int[Lab3.N][Lab3.H];
+
 
         for(int i = 0; i < Lab3.N; ++i) {
-            System.arraycopy(MB[i], 0, matrixMB[i], 0, Lab3.H);
+            System.arraycopy(MC[i], 0, matrixMC[i], 0, Lab3.H);
+            System.arraycopy(MD[i], 0, matrixMD[i], 0, Lab3.H);
         }
 
-        return sumVectors(multiplyVectorScalar(a, vectorD), multiplyVectorScalar(x,
-                multiplyVectorMatrix(E, multiplyMatrices(MA, matrixMB))));
+        return sumVectors(multiplyVectorScalar(p, multiplyVectorMatrix(multiplyVectorMatrix(R, matrixMC),
+                        matrixMD)), multiplyVectorScalar(d, multiplyVectorScalar(a, E)));
     }
 
     static int[][] multiplyMatrices(int[][] m1, int[][] m2) {
