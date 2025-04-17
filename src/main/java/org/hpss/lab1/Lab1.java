@@ -31,6 +31,6 @@ public class Lab1 {
         }
 
         long stopTime = System.currentTimeMillis();
-        System.out.printf("Lab2 execution completed, it took %d ms", stopTime - startTime);
+        System.out.printf("Lab1 execution completed, it took %d ms", stopTime - startTime);
     }
 }
