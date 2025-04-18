@@ -1,88 +1,55 @@
-package lab3;
-
-import java.util.Arrays;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.Semaphore;
-import java.util.concurrent.locks.ReentrantLock;
+package org.hpss.lab3;
 
 class T2 extends Thread {
-
-    static int[] B = new int[Lab3.N], Z2 = new int[Lab3.H];
-    static int[][] MA = new int[Lab3.N][Lab3.N];
-    private int x2, a2;
-
-    private final Semaphore sem;
-
-    private final static ReentrantLock Cs2 = new ReentrantLock();
-    private final CountDownLatch latch;
-    private final CyclicBarrier bar1, bar2;
-
-    public T2(CyclicBarrier bar1, CyclicBarrier bar2,
-              Semaphore sem, CountDownLatch latch) {
-        this.sem = sem;
-        this.latch = latch;
-        this.bar1 = bar1;
-        this.bar2 = bar2;
-    }
-
-    public static int[][] getMA() {
-        Cs2.lock();
-        try {
-            return MA;
-        } finally {
-            Cs2.unlock();
-        }
-    }
+    static int[] A2 = new int[Lab3.H];
+    static int[][] MD = new int[Lab3.N][Lab3.N];
 
     @Override
     public void run() {
+        Monitor m = Lab3.monitor;
+        int threadId = 1;
 
-        try {
-            System.out.println("T2 has started: ");
+        System.out.println("T2 has started: ");
 
-            // 1. Введення B, MA
-            Arrays.fill(B, Lab3.DEFAULT_NUM);
-            Data.fillMatrixByValue(MA, Lab3.DEFAULT_NUM);
+        // 1. Введення MD, d
+        Data.fillMatrixByValue(MD, Lab3.DEFAULT_NUM);
+        m.setD(Lab3.DEFAULT_NUM);
 
-            // 2. Сигнал задачі T1, T3, T4 про введення B, MA
-            // 3. Чекати на введення даних в задачі T1, T3, T4
+        // 2. Сигнал задачі T1, T3, T4 про введення D, MB
+        m.signalInputReady();
 
-            bar1.await();
+        // 3. Чекати на введення даних в задачі T1, T3, T4
+        m.waitForInput();
 
-            // 4. Обчислення1 a2 = (BH * CH)
-            int ai = Data.calculateA(Lab3.H, B, T1.С);
+        // 4. Обчислення1 a2 = (BH * CH)
+        int ai = Data.calculateA(Lab3.H, T3.B, T4.Z);
 
-            // 5. Обчислення2 a = a + a2 (КД1; СР)
-            Lab3.a.getAndAdd(ai);
+        // 5.	Обчислення2 a = a + a2 (КД1; СР)
+        m.addToA(ai);
 
-            // 6. Сигнал задачі T1, T3, T4 про завершення обчислень a
-            // 7. Чекати на завершення обчислень a в T1, T3, T4
+        // 6. Сигнал задачі T1, T3, T4 про завершення обчислень a
+//        m.signalInputReady();
+//
+//        // 7. Чекати на завершення обчислень a в T1, T3, T4
+//        m.waitForInput();
 
-            bar2.await();
+        // 8. Копія a2 = a (КД2)
+        int a2 = m.getA();
 
-            // 8. Копія a2 = a (КД2)
-            a2 = Lab3.a.get();
+        // 9. Копія p2 = p (КД3)
+        int p2 = m.getP();
 
-            // 9. Копія x2 = x (КД3)
-            sem.acquire();
-            x2 = T1.x;
-            sem.release();
+        // 10. Копія d2 = d (КД3)
+        int d2 = m.getD();
 
-            // 10. Обчислення3: ZH = а * D2 + F2 * x
 
-            Z2 = Data.calculateZ(Lab3.H, a2, T4.D, T3.getE(), getMA(), T4.MB, x2);
+        // 11. Обчислення3: Ah = (R * MC) * MD * p + a * E * d
+        A2 = Data.calculateRes(threadId, a2, p2, d2, T4.R,
+                T1.E, T1.MC, MD);
 
-            // 11. Сигнал задачі T1 про завершення обчислень ZH
-            latch.countDown();
+        // 12. Сигнал задачі T3 про завершення обчислень A4
+        m.signalAComplete();
 
-            System.out.println("T2 has ended ");
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            System.out.println("Thread 2 was interrupted.");
-        } catch (BrokenBarrierException e) {
-            System.out.println("Barrier is broken.");
-        }
+        System.out.println("T2 has ended ");
     }
 }

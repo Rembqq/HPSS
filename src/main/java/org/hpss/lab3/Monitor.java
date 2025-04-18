@@ -1,12 +1,12 @@
-package lab3;
+package org.hpss.lab3;
 
 public class Monitor {
     private int inputReady = 0;
-    //private int aReady = 0;
+    private int aReady = 0;
     private int resReady = 0;
-    private int p = Lab3.DEFAULT_NUM;
-    private int a = Lab3.DEFAULT_NUM;
-    private int d = Lab3.DEFAULT_NUM;
+    private int p = 0;
+    private int a = 0;
+    private int d = 0;
 //    private final int[] E = new int[Lab3.N];
 //    private final int[] A = new int[Lab3.N];
 //    private final int[] B = new int[Lab3.N];
@@ -38,18 +38,19 @@ public class Monitor {
 
     public synchronized void addToA(int value) {
         a += value;
-//        aReady++;
-//        notifyAll();
+        aReady++;
+        notifyAll();
     }
 
+
     public synchronized int getA() {
-//        while (aReady < Lab3.P) {
-//            try {
-//                wait();
-//            } catch (InterruptedException e) {
-//                Thread.currentThread().interrupt();
-//            }
-//        }
+        while (aReady < Lab3.P) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        }
         return a;
     }
 
@@ -59,10 +60,6 @@ public class Monitor {
 
     public synchronized int getD() {
         return d;
-    }
-
-    public synchronized void setA(int a) {
-        this.a = a;
     }
     public synchronized void setP(int p) {
         this.p = p;

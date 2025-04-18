@@ -1,4 +1,4 @@
-package lab3;
+package org.hpss.lab3;
 
 /*
 Лабораторна робота ЛР3 Варіант 6
@@ -13,7 +13,7 @@ A = (R*MC)*MD*p + (B*Z)*E*d
 
 public class Lab3 {
 
-    static int N = 1000, P = 4, DEFAULT_NUM = 1, H;
+    static int N = 20, P = 4, DEFAULT_NUM = 1, H;
     static final Monitor monitor = new Monitor();
 
     public static void main(String[] args) {
@@ -47,6 +47,6 @@ public class Lab3 {
         }
 
         long stopTime = System.currentTimeMillis();
-        System.out.printf("Lab3 execution completed, it took %d ms", stopTime - startTime);
+        System.out.printf("Lab3 execution completed, it took %d ms\n", stopTime - startTime);
     }
 }
