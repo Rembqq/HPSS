@@ -23,63 +23,40 @@ class Data {
         return multiplyVectorVector(vectorB, vectorZ);
     }
 
-    public static int[] calculateC(int threadId, int a, int p, int d,
-                                     int[] R, int[] E, int[][] MC, int[][] MD) {
+    public static void calculateC(int startIndex, int[] R, int[][] MC, int[] C) {
 
-        int quarterSize = Lab3.H * 2;
-//        int[][] MCh = new int[N][Lab3.H];
-//        int[][] MDh = new int[N][Lab3.H];
-        int[][] MCh = new int[quarterSize][quarterSize];
-        int[][] MDh = new int[quarterSize][quarterSize];
+        int[][] MCh = new int[N][Lab3.H];
 
+        for(int i = 0; i < N; ++i) {
 
-
-        System.out.println(Arrays.deepToString(MD));
-
-
-        for(int i = 0; i < quarterSize; ++i) {
-            int quarterPos = (i / (quarterSize - 1)) * quarterSize + i;
-
-            System.arraycopy(MC[quarterPos], (threadId % 2) * quarterSize, MCh[i], 0, quarterSize);
-            System.arraycopy(MD[quarterPos], (threadId % 2) * quarterSize, MDh[i], 0, quarterSize);
+            System.arraycopy(MC[i], startIndex, MCh[i], 0, Lab3.H);
         }
 
-
-        System.out.println("ddoAwpdAWdjWPDa");
-        System.out.println(Arrays.deepToString(MDh));
-
-        return sumVectors(multiplyVectorScalar(p, multiplyVectorMatrix(multiplyVectorMatrix(R, MCh),
-                MDh)), multiplyVectorScalar(d, multiplyVectorScalar(a, E)));
+        System.arraycopy(multiplyVectorMatrix(R, MCh), 0, C, startIndex, Lab3.H);
     }
 
-    // A = (R*MC)*MD*p + a*E*d
+    // A = C*MDh*p + a*E*d
     public static int[] calculateRes(int threadId, int a, int p, int d,
-                                     int[] R, int[] E, int[][] MC, int[][] MD) {
+                                     int[] C, int[] E, int[][] MD) {
 
-        int quarterSize = Lab3.H * 2;
-//        int[][] MCh = new int[N][Lab3.H];
-//        int[][] MDh = new int[N][Lab3.H];
-        int[][] MCh = new int[quarterSize][quarterSize];
-        int[][] MDh = new int[quarterSize][quarterSize];
-
-
+        int threadOffset = threadId * Lab3.H;
+        int[][] MDh = new int[N][Lab3.H];
+        int[] Eh = new int[Lab3.H];
 
         System.out.println(Arrays.deepToString(MD));
 
+        System.arraycopy(E, threadOffset, Eh, 0, Lab3.H);
 
-        for(int i = 0; i < quarterSize; ++i) {
-            int quarterPos = (i / (quarterSize - 1)) * quarterSize + i;
-
-            System.arraycopy(MC[quarterPos], (threadId % 2) * quarterSize, MCh[i], 0, quarterSize);
-            System.arraycopy(MD[quarterPos], (threadId % 2) * quarterSize, MDh[i], 0, quarterSize);
+        for(int i = 0; i < N; ++i) {
+            System.arraycopy(MD[i], threadOffset,
+                    MDh[i], 0, Lab3.H);
         }
-
 
         System.out.println("ddoAwpdAWdjWPDa");
         System.out.println(Arrays.deepToString(MDh));
 
-        return sumVectors(multiplyVectorScalar(p, multiplyVectorMatrix(multiplyVectorMatrix(R, MCh),
-                        MDh)), multiplyVectorScalar(d, multiplyVectorScalar(a, E)));
+        return sumVectors(multiplyVectorScalar(p, multiplyVectorMatrix(C,
+                MDh)), multiplyVectorScalar(d, multiplyVectorScalar(a, E)));
     }
 
     static int[][] multiplyMatrices(int[][] m1, int[][] m2) {
@@ -137,7 +114,8 @@ class Data {
     static int[] multiplyVectorMatrix(int[] vector, int[][] matrix) {
 
         if(vector.length != matrix.length) {
-            throw new IllegalArgumentException("Vector x Matrix multiplication failed: Different sizes");
+            throw new IllegalArgumentException("Vector x Matrix multiplication failed: Different sizes\n" +
+                    "v_size: " + vector.length + "; m_size: " + matrix.length + "x" + matrix[0].length);
         }
 
         int[] result = new int[matrix[0].length];

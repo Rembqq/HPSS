@@ -18,39 +18,47 @@ public class T4 extends Thread{
         Arrays.fill(R, Lab3.DEFAULT_NUM);
         Arrays.fill(Z, Lab3.DEFAULT_NUM);
 
-        // 2. Сигнал задачі T1, T2, T3 про введення D, MB
-        m.signalInputReady();
+        // 2. Сигнал задачі T1, T2, T3 про введення R, Z
+        m.signalStageReady();
 
         // 3. Чекати на введення даних в задачі T1, T2, T3
-        m.waitForInput();
+        m.waitStage();
 
         // 4. Обчислення1 a4 = (BH * CH)
-        int ai = Data.calculateA(Lab3.H * 3, T3.B, Z);
+        int ai = Data.calculateA(Lab3.H * threadId, T3.B, Z);
 
         // 5.	Обчислення2 a = a + a4 (КД1; СР)
         m.addToA(ai);
 
         // 6. Сигнал задачі T1, T2, T3 про завершення обчислень a
-//        m.signalInputReady();
-//
-//        // 7. Чекати на завершення обчислень a в T1, T2, T3
-//        m.waitForInput();
+        m.signalStageReady();
 
-        // 8. Копія a4 = a (КД2)
+        // 7. Чекати на завершення обчислень a в T1, T2, T3
+        m.waitStage();
+
+        // 8. Обчислення3: Cн = R * MCн
+        Data.calculateC(Lab3.H * threadId, T4.R, T1.MC, T3.C);
+
+        // 9. Сигнал задачі T1, T2, T4 про завершення етапу обчислення
+        m.signalStageReady();
+
+        // 10. Чекати на введення даних в задачі T1, T2, T4
+        m.waitStage();
+
+        // 11. Копія a4 = a (КД2)
         int a4 = m.getA();
 
-        // 9. Копія p4 = p (КД3)
+        // 12. Копія p4 = p (КД3)
         int p4 = m.getP();
 
-        // 10. Копія d4 = d (КД3)
+        // 13. Копія d4 = d (КД3)
         int d4 = m.getD();
 
+        // 14. Обчислення3: Ah = (R * MC) * MD * p + a * E * d
+        A4 = Data.calculateRes(threadId, a4, p4, d4, T3.C,
+                T1.E, T2.MD);
 
-        // 11. Обчислення3: Ah = (R * MC) * MD * p + a * E * d
-        A4 = Data.calculateRes(threadId, a4, p4, d4, R,
-                T1.E, T1.MC, T2.MD);
-
-        // 12. Сигнал задачі T3 про завершення обчислень A4
+        // 15. Сигнал задачі T3 про завершення обчислень A4
         m.signalAComplete();
 
         System.out.println("T4 has ended");

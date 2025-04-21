@@ -16,10 +16,10 @@ class T2 extends Thread {
         m.setD(Lab3.DEFAULT_NUM);
 
         // 2. Сигнал задачі T1, T3, T4 про введення D, MB
-        m.signalInputReady();
+        m.signalStageReady();
 
         // 3. Чекати на введення даних в задачі T1, T3, T4
-        m.waitForInput();
+        m.waitStage();
 
         // 4. Обчислення1 a2 = (BH * CH)
         int ai = Data.calculateA(Lab3.H, T3.B, T4.Z);
@@ -28,26 +28,35 @@ class T2 extends Thread {
         m.addToA(ai);
 
         // 6. Сигнал задачі T1, T3, T4 про завершення обчислень a
-//        m.signalInputReady();
-//
-//        // 7. Чекати на завершення обчислень a в T1, T3, T4
-//        m.waitForInput();
+        m.signalStageReady();
 
-        // 8. Копія a2 = a (КД2)
+        // 7. Чекати на завершення обчислень a в T1, T3, T4
+        m.waitStage();
+
+        // 8. Обчислення3: Cн = R * MCн
+        Data.calculateC(Lab3.H * threadId, T4.R, T1.MC, T3.C);
+
+        // 9. Сигнал задачі T1, T3, T4 про завершення етапу обчислення
+        m.signalStageReady();
+
+        // 10. Чекати на введення даних в задачі T1, T3, T4
+        m.waitStage();
+
+        // 11. Копія a2 = a (КД2)
         int a2 = m.getA();
 
-        // 9. Копія p2 = p (КД3)
+        // 12. Копія p2 = p (КД3)
         int p2 = m.getP();
 
-        // 10. Копія d2 = d (КД3)
+        // 13. Копія d2 = d (КД3)
         int d2 = m.getD();
 
 
-        // 11. Обчислення3: Ah = (R * MC) * MD * p + a * E * d
-        A2 = Data.calculateRes(threadId, a2, p2, d2, T4.R,
-                T1.E, T1.MC, MD);
+        // 14. Обчислення3: Ah = (R * MC) * MD * p + a * E * d
+        A2 = Data.calculateRes(threadId, a2, p2, d2, T3.C,
+                T1.E, MD);
 
-        // 12. Сигнал задачі T3 про завершення обчислень A4
+        // 15. Сигнал задачі T3 про завершення обчислень A4
         m.signalAComplete();
 
         System.out.println("T2 has ended ");
