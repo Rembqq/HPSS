@@ -23,16 +23,17 @@ class Data {
         return multiplyVectorVector(vectorB, vectorZ);
     }
 
-    public static void calculateC(int startIndex, int[] R, int[][] MC, int[] C) {
+    public static int[] calculateC(int startIndex, int[] R, int[][] MC, int[] C) {
 
         int[][] MCh = new int[N][Lab3.H];
 
         for(int i = 0; i < N; ++i) {
-
             System.arraycopy(MC[i], startIndex, MCh[i], 0, Lab3.H);
         }
 
-        System.arraycopy(multiplyVectorMatrix(R, MCh), 0, C, startIndex, Lab3.H);
+        return multiplyVectorMatrix(R, MCh);
+
+        //System.arraycopy(multiplyVectorMatrix(R, MCh), 0, C, startIndex, Lab3.H);
     }
 
     // A = C*MDh*p + a*E*d
@@ -43,8 +44,6 @@ class Data {
         int[][] MDh = new int[N][Lab3.H];
         int[] Eh = new int[Lab3.H];
 
-        System.out.println(Arrays.deepToString(MD));
-
         System.arraycopy(E, threadOffset, Eh, 0, Lab3.H);
 
         for(int i = 0; i < N; ++i) {
@@ -52,11 +51,8 @@ class Data {
                     MDh[i], 0, Lab3.H);
         }
 
-        System.out.println("ddoAwpdAWdjWPDa");
-        System.out.println(Arrays.deepToString(MDh));
-
         return sumVectors(multiplyVectorScalar(p, multiplyVectorMatrix(C,
-                MDh)), multiplyVectorScalar(d, multiplyVectorScalar(a, E)));
+                MDh)), multiplyVectorScalar(d, multiplyVectorScalar(a, Eh)));
     }
 
     static int[][] multiplyMatrices(int[][] m1, int[][] m2) {

@@ -38,13 +38,14 @@ public class T1 extends Thread {
         m.waitStage();
 
         // 8. Обчислення3: Cн = R * MCн
-        Data.calculateC(0, T4.R, MC, T3.C);
+        int[] Ch = Data.calculateC(0, T4.R, MC, T3.C);
+        m.setC(threadId, Ch);
 
         // 9. Сигнал задачі T2, T3, T4 про завершення етапу обчислення
-        m.signalStageReady();
+        m.signalC();
 
         // 10. Чекати на введення даних в задачі T2, T3, T4
-        m.waitStage();
+        m.waitC();
 
         // 11. Копія a1 = a (КД2)
         int a1 = m.getA();
@@ -56,7 +57,7 @@ public class T1 extends Thread {
         int d1 = m.getD();
 
         // 14. Обчислення3: Ah = C * MD * p + a * E * d
-        A1 = Data.calculateRes(threadId, a1, p1, d1, T3.C,
+        A1 = Data.calculateRes(threadId, a1, p1, d1, m.getC(),
                 E, T2.MD);
 
         // 15. Сигнал задачі T3 про завершення обчислень A4

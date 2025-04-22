@@ -8,12 +8,12 @@ A = (R*MC)*MD*p + (B*Z)*E*d
 ПВВ3: A, B, p
 ПВВ4: R, Z
 Волковський М.І. ІМ-24
-Дата 15.04.2024
+Дата 21.04.2024
  */
 
 public class Lab3 {
 
-    static int N = 20, P = 4, DEFAULT_NUM = 1, H;
+    static int N = 100, P = 4, DEFAULT_NUM = 1, H;
     static final Monitor monitor = new Monitor();
 
     public static void main(String[] args) {
