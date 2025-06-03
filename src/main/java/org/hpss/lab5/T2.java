@@ -55,45 +55,49 @@ class T2 {
         System.arraycopy(transitC, H, Ch, 0, H);
         System.arraycopy(transitB, H, Bh, 0, H);
         System.arraycopy(transitZ, H, Zh, 0, H);
+        System.arraycopy(transitMX, 0, MXh, 0, blockSize);
 
-        for(int i = rank * H; i < (rank + 1) * H ; ++i) {
-            System.arraycopy(transitMX[i], 0, MXh[i], 0, N);
-        }
+//        for (int i = rank * H; i < (rank + 1) * H; ++i) {
+//            System.arraycopy(transitMX, i * N, MXh, i * N, N);
+//        }
 
-        System.arraycopy(transitMX, rank * H, MXh, 0, N);
 
         // b2 = max(MXH * MR)
         int[][] MX_MR_prod = multiplyMatrices(unflat(MXh, H, N), unflat(MR, N, N));
         int b2 = maxMatrix(MX_MR_prod);
 
         // Прийняти b1 від T1
-        int b1 = 0;
+        int[] b1 = new int[1];
         MPI.COMM_WORLD.Recv(b1, 0, 1, MPI.INT, rank - 1, 25);
 
-        int bMax12 = Math.max(b1, b2);
+        int[] bMax12 = new int[] { Math.max(b1[0], b2) } ;
+
+        //System.out.println("Rank " + rank + " checkpoint 1 ");
 
         // Передати T3: bMax12
         MPI.COMM_WORLD.Send(bMax12, 0, 1, MPI.INT, rank + 1, 26);
 
+        //System.out.println("Rank " + rank + " checkpoint 2 ");
+
         // Прийом b від T3
-        int b = -1;
+        int[] b = new int[1];
         MPI.COMM_WORLD.Recv(b, 0, 1, MPI.INT, rank + 1, 33);
+
+        //System.out.println("Rank " + rank + " checkpoint 3 ");
 
         // Передати задачі Т1 дані: b
         MPI.COMM_WORLD.Send(b, 0, 1, MPI.INT, rank - 1, 34);
 
-
         // Обчислення 3: a = (BH + CH) * ZH + b
-        int a2 = Data.calculateRes(Bh, Ch, Zh, b);
-        int a36 = 0;
+        int a2 = Data.calculateRes(Bh, Ch, Zh, b[0]);
+        int[] a36 = new int[1];
 
         MPI.COMM_WORLD.Recv(a36, 0, 1, MPI.INT, rank + 1, 38);
 
-        int sumA26 = a2 + a36;
+        int[] sumA26 = new int[] { a2 + a36[0] };
 
         // Передати задачі Т1 дані: a
         MPI.COMM_WORLD.Send(sumA26, 0, 1, MPI.INT, rank - 1, 39);
-
 
         System.out.println("T2 has ended ");
     }

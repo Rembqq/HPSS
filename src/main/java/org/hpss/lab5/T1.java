@@ -36,31 +36,39 @@ public class T1 {
 
         MPI.COMM_WORLD.Recv(MR, 0, N * N, MPI.INT, rank + 1, 24);
 
+        //System.out.println("Rank " + rank + " checkpoint 1 ");
+
         // Розпаковка поточних значень
         System.arraycopy(transitB, 0, Bh, 0, H);
 
         int[][] MX_MR_prod = multiplyMatrices(unflat(MXh, H, N), unflat(MR, N, N));
-        int b1 = maxMatrix(MX_MR_prod);
+        int[] b1 = new int[] { maxMatrix(MX_MR_prod) };
 
         // Передача b1 до T2
         MPI.COMM_WORLD.Send(b1, 0, 1, MPI.INT, rank + 1, 25);
 
+        //System.out.println("Rank " + rank + " checkpoint 2 ");
+
         // Прийом b від T2
-        int b = -1;
+        int[] b = new int[1];
         MPI.COMM_WORLD.Recv(b, 0, 1, MPI.INT, rank + 1, 34);
 
+        //System.out.println("Rank " + rank + " checkpoint 3 ");
+
         // Обчислення 3: a = (BH + CH) * ZH + b
-        int a1 = Data.calculateRes(Bh, Ch, Zh, b);
-        int a26 = 0;
+        int a1 = Data.calculateRes(Bh, Ch, Zh, b[0]);
+        int[] a26 = new int[1];
 
         MPI.COMM_WORLD.Recv(a26, 0, 1, MPI.INT, rank + 1, 39);
 
-        int a = a1 + a26;
+        //System.out.println("Rank " + rank + " checkpoint 4 ");
+
+        int a = a1 + a26[0];
+
+        System.out.println("T1 has ended ");
 
         // Виведення результату
-        System.out.println("Результат a: " + a);
+        System.out.println("Result a: " + a);
 
-        MPI.Finalize();
-        System.out.println("T1 has ended ");
     }
 }
