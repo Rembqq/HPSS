@@ -1,69 +1,52 @@
 package org.hpss.lab5;
 
-import org.hpss.lab3.Monitor;
+import mpi.MPI;
 
-import java.util.Arrays;
-public class T6 extends Thread{
+import static org.hpss.lab5.Data.maxMatrix;
+import static org.hpss.lab5.Data.multiplyMatrices;
+import static org.hpss.lab5.Lab5.H;
+import static org.hpss.lab5.Lab5.N;
 
-    static int[] R = new int[Lab5.N];
-    static int[] Z = new int[Lab5.N];
-    static int[] A4 = new int[Lab5.H];
+public class T6{
 
-    @Override
-    public void run() {
-        Monitor m = Lab5.monitor;
-        int threadId = 3;
+    public static void run() {
 
-        System.out.println("T4 has started: ");
+        // int threadId = 3;
+        int rank = 5;
 
-        // 1. Введення R, Z
-        Arrays.fill(R, Lab5.DEFAULT_NUM);
-        Arrays.fill(Z, Lab5.DEFAULT_NUM);
+        System.out.println("T6 has started: ");
 
-        // 2. Сигнал задачі T1, T2, T3 про введення R, Z
-        m.signalStageReady();
+        int[] Bh = new int[H];
+        int[][] MXh = new int[H][N];
+        int[] Zh = new int[H];
+        int[] Ch = new int[H];
+        int[][] MR = new int[N][N];
 
-        // 3. Чекати на введення даних в задачі T1, T2, T3
-        m.waitStage();
+        MPI.COMM_WORLD.Recv(Bh, 0, Bh.length, MPI.INT, rank - 1, 11);
+        MPI.COMM_WORLD.Recv(MXh, 0, MXh.length * MXh[0].length, MPI.INT, rank - 1, 12);
+        MPI.COMM_WORLD.Recv(Zh, 0, Zh.length, MPI.INT, rank - 1, 13);
+        MPI.COMM_WORLD.Recv(Ch, 0, Ch.length, MPI.INT, rank - 1, 14);
+        MPI.COMM_WORLD.Recv(MR, 0, MR.length * MR[0].length, MPI.INT, rank - 1, 15);
 
-        // 4. Обчислення1 a4 = (BH * CH)
-        int ai = Data.calculateA(Lab5.H * threadId, T3.B, Z);
+        // b6 = max(MXH * MR)
+        int[][] MX_MR_prod = multiplyMatrices(MXh, MR);
+        int b6 = maxMatrix(MX_MR_prod);
 
-        // 5.	Обчислення2 a = a + a4 (КД1; СР)
-        m.addToA(ai);
+        // Прийняти b5 від T5
+        int b5 = 0;
+        MPI.COMM_WORLD.Recv(b5, 0, 1, MPI.INT, rank - 1, 29);
 
-        // 6. Сигнал задачі T1, T2, T3 про завершення обчислень a
-        m.signalStageReady();
+        int b = Math.max(b5, b6);
 
-        // 7. Чекати на завершення обчислень a в T1, T2, T3
-        m.waitStage();
+        // Передати T5: b
+        MPI.COMM_WORLD.Send(b, 0, 1, MPI.INT, rank - 1, 30);
 
-        // 8. Обчислення3: Cн = R * MCн
-        int[] Ch = Data.calculateC(Lab5.H * threadId, T4.R, T1.MC);
-        m.setC(threadId, Ch);
+        // Обчислення 3: a = (BH + CH) * ZH + b
+        int a6 = Data.calculateRes(Bh, Ch, Zh, b);
 
-        // 9. Сигнал задачі T1, T2, T4 про завершення етапу обчислення
-        m.signalC();
+        // Передати задачі Т5 дані: a
+        MPI.COMM_WORLD.Send(a6, 0, 1, MPI.INT, rank - 1, 35);
 
-        // 10. Чекати на введення даних в задачі T1, T2, T4
-        m.waitC();
-
-        // 11. Копія a4 = a (КД2)
-        int a4 = m.getA();
-
-        // 12. Копія p4 = p (КД3)
-        int p4 = m.getP();
-
-        // 13. Копія d4 = d (КД3)
-        int d4 = m.getD();
-
-        // 14. Обчислення3: Ah = (R * MC) * MD * p + a * E * d
-        A4 = Data.calculateRes(threadId, a4, p4, d4, m.getC(),
-                T1.E, T2.MD);
-
-        // 15. Сигнал задачі T3 про завершення обчислень A4
-        m.signalAComplete();
-
-        System.out.println("T4 has ended");
+        System.out.println("T6 has ended ");
     }
 }

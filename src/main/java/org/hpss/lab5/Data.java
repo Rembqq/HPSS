@@ -12,34 +12,10 @@ class Data {
         }
     }
 
-    // b = max(MXh * MR)
-    public static int calculateB(int startIndex, int[][] MX, int[][] MR) {
-        int[] vectorB = new int[N];
-        int[] vectorZ = new int[N];
-
-        System.arraycopy(B, startIndex, vectorB, 0, Lab5.H);
-        System.arraycopy(Z, startIndex, vectorZ, 0, Lab5.H);
-
-        return multiplyVectorVector(vectorB, vectorZ);
-    }
-
-    public static int[] calculateC(int startIndex, int[] R, int[][] MC) {
-
-        int[][] MCh = new int[N][Lab5.H];
-
-        for(int i = 0; i < N; ++i) {
-            System.arraycopy(MC[i], startIndex, MCh[i], 0, Lab5.H);
-        }
-
-        return multiplyVectorMatrix(R, MCh);
-    }
-
     // a = (BH + CH) * ZH + b
-    public static int calculateRes(int threadId, int[] B, int[] C, int[] Z,
+    public static int calculateRes(int[] B, int[] C, int[] Z,
                                      int b) {
-        int[] sumBC = new int[N];
-        for (int i = 0; i < N; i++) sumBC[i] = B[i] + C[i];
-        return multiplyVectorVector(sumBC, Z) + b;
+        return multiplyVectorVector(sumVectors(B, C), Z) + b;
     }
 
     static int maxMatrix(int[][] matrix) {
@@ -85,6 +61,14 @@ class Data {
             vector[i] *= scalar;
         }
         return vector;
+    }
+
+    static int[][] unflat(int[] flatMatrix, int rows, int cols) {
+        int[][] result = new int[rows][cols];
+        for (int i = 0; i < flatMatrix.length; i++) {
+            result[i / cols][i % cols] = flatMatrix[i];
+        }
+        return result;
     }
 
     static int multiplyVectorVector(int[] v1, int[] v2) {
