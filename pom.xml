@@ -14,4 +14,15 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <dependencies>
+        <dependency>
+            <groupId>mpj</groupId>
+            <artifactId>mpj</artifactId>
+            <version>0.44</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/mpj-v0_44/lib/mpj.jar</systemPath>
+        </dependency>
+    </dependencies>
+
+
 </project>

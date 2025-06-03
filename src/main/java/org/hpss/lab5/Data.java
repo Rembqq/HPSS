@@ -1,8 +1,8 @@
-package org.hpss.lab3;
+package org.hpss.lab5;
 
 import java.util.Arrays;
 
-import static org.hpss.lab3.Lab3.N;
+import static org.hpss.lab5.Lab5.N;
 
 class Data {
 
@@ -12,45 +12,41 @@ class Data {
         }
     }
 
-    // a = (B * Z)
-    public static int calculateA(int startIndex, int[] B, int[] Z) {
+    // b = max(MXh * MR)
+    public static int calculateB(int startIndex, int[][] MX, int[][] MR) {
         int[] vectorB = new int[N];
         int[] vectorZ = new int[N];
 
-        System.arraycopy(B, startIndex, vectorB, 0, Lab3.H);
-        System.arraycopy(Z, startIndex, vectorZ, 0, Lab3.H);
+        System.arraycopy(B, startIndex, vectorB, 0, Lab5.H);
+        System.arraycopy(Z, startIndex, vectorZ, 0, Lab5.H);
 
         return multiplyVectorVector(vectorB, vectorZ);
     }
 
     public static int[] calculateC(int startIndex, int[] R, int[][] MC) {
 
-        int[][] MCh = new int[N][Lab3.H];
+        int[][] MCh = new int[N][Lab5.H];
 
         for(int i = 0; i < N; ++i) {
-            System.arraycopy(MC[i], startIndex, MCh[i], 0, Lab3.H);
+            System.arraycopy(MC[i], startIndex, MCh[i], 0, Lab5.H);
         }
 
         return multiplyVectorMatrix(R, MCh);
     }
 
-    // A = C*MDh*p + a*E*d
-    public static int[] calculateRes(int threadId, int a, int p, int d,
-                                     int[] C, int[] E, int[][] MD) {
+    // a = (BH + CH) * ZH + b
+    public static int calculateRes(int threadId, int[] B, int[] C, int[] Z,
+                                     int b) {
+        int[] sumBC = new int[N];
+        for (int i = 0; i < N; i++) sumBC[i] = B[i] + C[i];
+        return multiplyVectorVector(sumBC, Z) + b;
+    }
 
-        int threadOffset = threadId * Lab3.H;
-        int[][] MDh = new int[N][Lab3.H];
-        int[] Eh = new int[Lab3.H];
-
-        System.arraycopy(E, threadOffset, Eh, 0, Lab3.H);
-
-        for(int i = 0; i < N; ++i) {
-            System.arraycopy(MD[i], threadOffset,
-                    MDh[i], 0, Lab3.H);
-        }
-
-        return sumVectors(multiplyVectorScalar(p, multiplyVectorMatrix(C,
-                MDh)), multiplyVectorScalar(d, multiplyVectorScalar(a, Eh)));
+    static int maxMatrix(int[][] matrix) {
+        return Arrays.stream(matrix)
+                .flatMapToInt(Arrays::stream)
+                .max()
+                .orElseThrow(() -> new IllegalArgumentException("MaxMatrix() error. Matrix is empty"));
     }
 
     static int[][] multiplyMatrices(int[][] m1, int[][] m2) {

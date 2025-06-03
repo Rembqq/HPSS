@@ -34,7 +34,7 @@ class T2 extends Thread {
         m.waitStage();
 
         // 8. Обчислення3: Cн = R * MCн
-        int[] Ch = Data.calculateC(Lab3.H * threadId, T4.R, T1.MC, T3.C);
+        int[] Ch = Data.calculateC(Lab3.H * threadId, T4.R, T1.MC);
         m.setC(threadId, Ch);
 
         // 9. Сигнал задачі T1, T3, T4 про завершення етапу обчислення

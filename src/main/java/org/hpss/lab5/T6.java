@@ -1,22 +1,24 @@
-package org.hpss.lab3;
+package org.hpss.lab5;
+
+import org.hpss.lab3.Monitor;
 
 import java.util.Arrays;
-public class T4 extends Thread{
+public class T6 extends Thread{
 
-    static int[] R = new int[Lab3.N];
-    static int[] Z = new int[Lab3.N];
-    static int[] A4 = new int[Lab3.H];
+    static int[] R = new int[Lab5.N];
+    static int[] Z = new int[Lab5.N];
+    static int[] A4 = new int[Lab5.H];
 
     @Override
     public void run() {
-        Monitor m = Lab3.monitor;
+        Monitor m = Lab5.monitor;
         int threadId = 3;
 
         System.out.println("T4 has started: ");
 
         // 1. Введення R, Z
-        Arrays.fill(R, Lab3.DEFAULT_NUM);
-        Arrays.fill(Z, Lab3.DEFAULT_NUM);
+        Arrays.fill(R, Lab5.DEFAULT_NUM);
+        Arrays.fill(Z, Lab5.DEFAULT_NUM);
 
         // 2. Сигнал задачі T1, T2, T3 про введення R, Z
         m.signalStageReady();
@@ -25,7 +27,7 @@ public class T4 extends Thread{
         m.waitStage();
 
         // 4. Обчислення1 a4 = (BH * CH)
-        int ai = Data.calculateA(Lab3.H * threadId, T3.B, Z);
+        int ai = Data.calculateA(Lab5.H * threadId, T3.B, Z);
 
         // 5.	Обчислення2 a = a + a4 (КД1; СР)
         m.addToA(ai);
@@ -37,7 +39,7 @@ public class T4 extends Thread{
         m.waitStage();
 
         // 8. Обчислення3: Cн = R * MCн
-        int[] Ch = Data.calculateC(Lab3.H * threadId, T4.R, T1.MC);
+        int[] Ch = Data.calculateC(Lab5.H * threadId, T4.R, T1.MC);
         m.setC(threadId, Ch);
 
         // 9. Сигнал задачі T1, T2, T4 про завершення етапу обчислення
