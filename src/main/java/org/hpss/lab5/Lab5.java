@@ -8,7 +8,7 @@ a = ((B+C)*Z)+ max (MX*MR)
 ПВВ3: Z
 ПВВ4: C, MR
 Волковський М.І. ІМ-24
-Дата 31.05.2025
+Дата 04.06.2025
  */
 
 import mpi.MPI;
@@ -20,11 +20,10 @@ public class Lab5 {
     static int H;
 
     public static void main(String[] args) {
-        // Инициализация MPI
+        // Ініціалізація MPI
         MPI.Init(args);
 
         int rank = MPI.COMM_WORLD.Rank();
-        int size = MPI.COMM_WORLD.Size();
 
         if (N % P != 0) {
             if (rank == 0) {
@@ -41,7 +40,6 @@ public class Lab5 {
             startTime = System.currentTimeMillis();
         }
 
-        // Вызов соответствующего обработчика по номеру процесса
         switch (rank) {
             case 0 -> T1.run();
             case 1 -> T2.run();
@@ -49,12 +47,10 @@ public class Lab5 {
             case 3 -> T4.run();
             case 4 -> T5.run();
             case 5 -> T6.run();
-            default -> {
-                System.out.println("Процес з рангом " + rank + " не визначено.");
-            }
+            default -> System.out.println("Процес з рангом " + rank + " не визначено.");
         }
 
-        MPI.COMM_WORLD.Barrier(); // дождаться завершения всех процессов
+        MPI.COMM_WORLD.Barrier(); // дочекатися завершення всіх процесів
 
         if (rank == 0) {
             long stopTime = System.currentTimeMillis();

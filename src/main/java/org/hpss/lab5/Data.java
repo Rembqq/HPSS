@@ -100,4 +100,3 @@ class Data {
         return result;
     }
 }
-

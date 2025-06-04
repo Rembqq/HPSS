@@ -12,8 +12,7 @@ public class T5 {
 
         System.out.println("T5 has started: ");
 
-        // int threadId = 3;
-        int rank = 4;
+        int rank = MPI.COMM_WORLD.Rank();
         int blockSize = N * H;
 
         int[] MR = new int[N * N];
@@ -51,10 +50,6 @@ public class T5 {
         System.arraycopy(transitZ, 0, Zh, 0, H);
         System.arraycopy(transitMX, 0, MXh, 0, blockSize);
 
-//        for (int i = rank * H; i < (rank + 1) * H; ++i) {
-//            System.arraycopy(transitMX, i * N, MXh, i * N, N);
-//        }
-
         // b5 = max(MXH * MR)
         int[][] MX_MR_prod = multiplyMatrices(unflat(MXh, H, N), unflat(MR, N, N));
         int b5 = maxMatrix(MX_MR_prod);
@@ -68,13 +63,9 @@ public class T5 {
         // Передати T6: bMax15
         MPI.COMM_WORLD.Send(bMax15, 0, 1, MPI.INT, rank + 1, 29);
 
-        //System.out.println("Rank " + rank + " checkpoint 2 ");
-
         // Прийом b від T6
         int[] b = new int[1];
         MPI.COMM_WORLD.Recv(b, 0, 1, MPI.INT, rank + 1, 30);
-
-        //System.out.println("Rank " + rank + " checkpoint 3 ");
 
         // Передати задачі Т4 дані: b
         MPI.COMM_WORLD.Send(b, 0, 1, MPI.INT, rank - 1, 31);

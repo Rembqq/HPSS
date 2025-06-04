@@ -12,8 +12,7 @@ public class T1 {
 
         System.out.println("Process T1 (rank 0) working...");
 
-        // int threadId = 3;
-        int rank = 0;
+        int rank = MPI.COMM_WORLD.Rank();
 
         // Прийом даних від T2
         int[] MXh = new int[H * N];
@@ -36,8 +35,6 @@ public class T1 {
 
         MPI.COMM_WORLD.Recv(MR, 0, N * N, MPI.INT, rank + 1, 24);
 
-        //System.out.println("Rank " + rank + " checkpoint 1 ");
-
         // Розпаковка поточних значень
         System.arraycopy(transitB, 0, Bh, 0, H);
 
@@ -47,13 +44,9 @@ public class T1 {
         // Передача b1 до T2
         MPI.COMM_WORLD.Send(b1, 0, 1, MPI.INT, rank + 1, 25);
 
-        //System.out.println("Rank " + rank + " checkpoint 2 ");
-
         // Прийом b від T2
         int[] b = new int[1];
         MPI.COMM_WORLD.Recv(b, 0, 1, MPI.INT, rank + 1, 34);
-
-        //System.out.println("Rank " + rank + " checkpoint 3 ");
 
         // Обчислення 3: a = (BH + CH) * ZH + b
         int a1 = Data.calculateRes(Bh, Ch, Zh, b[0]);
@@ -61,14 +54,11 @@ public class T1 {
 
         MPI.COMM_WORLD.Recv(a26, 0, 1, MPI.INT, rank + 1, 39);
 
-        //System.out.println("Rank " + rank + " checkpoint 4 ");
-
         int a = a1 + a26[0];
 
         System.out.println("T1 has ended ");
 
         // Виведення результату
         System.out.println("Result a: " + a);
-
     }
 }

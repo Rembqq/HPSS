@@ -11,8 +11,7 @@ public class T6{
 
     public static void run() {
 
-        // int threadId = 3;
-        int rank = 5;
+        int rank = MPI.COMM_WORLD.Rank();
 
         System.out.println("T6 has started: ");
 
